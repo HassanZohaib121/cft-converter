@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CFT Calculator</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f5f7;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: #222;
+      }
+
+      .calculator {
+        background: white;
+        width: 100%;
+        max-width: 480px;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      h1 {
+        font-size: 25px;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 28px;
+      }
+
+      .dimension {
+        margin-bottom: 20px;
+      }
+
+      .dimension label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 9px;
+      }
+
+      .inputs {
+        display: flex;
+        gap: 12px;
+      }
+
+      .input-group {
+        flex: 1;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 17px;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: #333;
+      }
+
+      .input-group span {
+        display: block;
+        color: #888;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      .result {
+        background: #f0f2f4;
+        padding: 22px;
+        border-radius: 10px;
+        margin-top: 28px;
+        text-align: center;
+      }
+
+      .result small {
+        color: #666;
+        font-size: 13px;
+      }
+
+      .result h2 {
+        font-size: 36px;
+        margin-top: 8px;
+        font-weight: 700;
+      }
+
+      .result h2 span {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .formula {
+        font-size: 13px;
+        color: #777;
+        margin-top: 12px;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      button {
+        flex: 1;
+        padding: 13px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      .calculate {
+        background: #222;
+        color: white;
+      }
+
+      .reset {
+        background: #e9e9e9;
+        color: #333;
+      }
+
+      button:hover {
+        opacity: 0.85;
+      }
+
+      @media (max-width: 400px) {
+        .calculator {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="calculator">
+      <h1>CFT Calculator</h1>
+      <p class="subtitle">Calculate cubic feet from dimensions</p>
+
+      <!-- Length -->
+      <div class="dimension">
+        <label>Length</label>
+        <div class="inputs">
+          <div class="input-group">
+            <input type="number" id="lengthFt" value="0" min="0" step="any" />
+            <span>Feet (ft)</span>
+          </div>
+          <div class="input-group">
+            <input
+              type="number"
+              id="lengthIn"
+              value="0"
+              min="0"
+              max="11.99"
+              step="any"
+            />
+            <span>Inches (in)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Width -->
+      <div class="dimension">
+        <label>Width</label>
+        <div class="inputs">
+          <div class="input-group">
+            <input type="number" id="widthFt" value="0" min="0" step="any" />
+            <span>Feet (ft)</span>
+          </div>
+          <div class="input-group">
+            <input
+              type="number"
+              id="widthIn"
+              value="0"
+              min="0"
+              max="11.99"
+              step="any"
+            />
+            <span>Inches (in)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Height -->
+      <div class="dimension">
+        <label>Height</label>
+        <div class="inputs">
+          <div class="input-group">
+            <input type="number" id="heightFt" value="0" min="0" step="any" />
+            <span>Feet (ft)</span>
+          </div>
+          <div class="input-group">
+            <input
+              type="number"
+              id="heightIn"
+              value="0"
+              min="0"
+              max="11.99"
+              step="any"
+            />
+            <span>Inches (in)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="result">
+        <small>Total Cubic Feet</small>
+        <h2 id="result">0.00 <span>CFT</span></h2>
+        <p class="formula" id="formula">0 × 0 × 0</p>
+      </div>
+
+      <div class="buttons">
+        <button class="calculate" onclick="calculate()">Calculate</button>
+        <button class="reset" onclick="resetCalculator()">Reset</button>
+      </div>
+    </div>
+
+    <script>
+      const fields = [
+        "lengthFt",
+        "lengthIn",
+        "widthFt",
+        "widthIn",
+        "heightFt",
+        "heightIn",
+      ];
+
+      function getValue(id) {
+        return Number(document.getElementById(id).value);
+      }
+
+      function calculate() {
+        const values = fields.map(getValue);
+
+        if (values.some((v) => !Number.isFinite(v) || v < 0)) {
+          alert("Please enter valid positive dimensions.");
+          return;
+        }
+
+        const [lf, li, wf, wi, hf, hi] = values;
+
+        if (li >= 12 || wi >= 12 || hi >= 12) {
+          alert("Inches must be less than 12.");
+          return;
+        }
+
+        const length = lf + li / 12;
+        const width = wf + wi / 12;
+        const height = hf + hi / 12;
+
+        const total = length * width * height;
+
+        document.getElementById("result").innerHTML =
+          total.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }) + " <span>CFT</span>";
+
+        document.getElementById("formula").textContent =
+          `${length.toFixed(4)} × ${width.toFixed(4)} × ${height.toFixed(4)}`;
+      }
+
+      function resetCalculator() {
+        fields.forEach((id) => {
+          document.getElementById(id).value = 0;
+        });
+
+        calculate();
+      }
+
+      // Automatically calculate whenever dimensions change
+      fields.forEach((id) => {
+        document.getElementById(id).addEventListener("input", calculate);
+      });
+
+      calculate();
+    </script>
+  </body>
+</html>
